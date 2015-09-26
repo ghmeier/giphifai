@@ -1,0 +1,40 @@
+{
+  "name": "express boilerplate",
+  "version": "0.0.1",
+  "description": "Express Boilerplate Project",
+  "keywords": [
+  	"express",
+	"starter"
+  ],
+  "homepage": "https://github.com/ghmeier/express-boilerplate",
+  "author": "Garret Meier <meier.garret@gmail.com>",
+  "contributors": [
+  	
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ghmeier/express-boilerplate.git"
+  },
+  "bugs:": "https://github.com/ghmeier/express-boilerplate/issues",
+  "engines": {
+    "node": ">= v0.10.0"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.6",
+    "body-parser": "^1.14.0",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "express-session": "^1.11.3",
+    "express-validator": "^2.17.1",
+    "lodash": "^3.10.1",
+    "passport": "^0.3.0",
+    "path": "^0.12.7",
+    "qs": "^2.4.1",
+    "serve-favicon": "^2.3.0",
+    "swig": "^1.4.2"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
