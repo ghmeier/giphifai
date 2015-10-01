@@ -1,21 +1,24 @@
 {
-  "name": "express boilerplate",
+  "name": "giphifai",
   "version": "0.0.1",
-  "description": "Express Boilerplate Project",
+  "description": "Giphifai",
   "keywords": [
-  	"express",
-	"starter"
+    "express",
+    "giphy",
+    "gif",
+    "clarifai",
+    "ai",
+    "tagging",
+    "firebase"
   ],
-  "homepage": "https://github.com/ghmeier/express-boilerplate",
+  "homepage": "https://github.com/ghmeier/giphifai",
   "author": "Garret Meier <meier.garret@gmail.com>",
-  "contributors": [
-  	
-  ],
+  "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git://github.com/ghmeier/express-boilerplate.git"
+    "url": "git://github.com/ghmeier/giphifai.git"
   },
-  "bugs:": "https://github.com/ghmeier/express-boilerplate/issues",
+  "bugs:": "https://github.com/ghmeier/giphifai/issues",
   "engines": {
     "node": ">= v0.10.0"
   },
@@ -26,10 +29,12 @@
     "express": "^4.13.3",
     "express-session": "^1.11.3",
     "express-validator": "^2.17.1",
+    "firebase": "^2.3.0",
     "lodash": "^3.10.1",
     "passport": "^0.3.0",
     "path": "^0.12.7",
     "qs": "^2.4.1",
+    "request": "^2.64.0",
     "serve-favicon": "^2.3.0",
     "swig": "^1.4.2"
   },
