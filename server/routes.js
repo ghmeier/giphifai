@@ -9,7 +9,6 @@ module.exports = function(app,passport){
 
 	app.get("/analyze",function(req,res){
 		var max = req.query.num || 1;
-		console.log(max);
 		var x = 0,fin = 0, success = 0;
 		while (x < max){
 			var current = new Gif();
@@ -21,7 +20,6 @@ module.exports = function(app,passport){
 						}
 						
 						if (up.tags){
-							console.log("Finished analysis");
 							success++;
 						//res.json(up);
 						}
@@ -34,11 +32,16 @@ module.exports = function(app,passport){
 	});
 
 	app.get("/tags",function(req,res){
-		var start = req.query.offset || 0;
-		var limit = req.query.limit || 25;
-
+		var start = parseInt(req.query.offset) || 0;
+		var limit = parseInt(req.query.limit) || 25;
 		GifList.listTags(start,limit,function(tags){
 			res.json({tags:tags});
+		});
+	});
+
+	app.get("/tags/:tag",function(req,res){
+		var list = new GifList(req.params.tag,function(list){
+			res.json({list:list});
 		});
 	});
 

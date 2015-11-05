@@ -1,5 +1,6 @@
 var Firebase = require("firebase");
-//var Gif = require("Gif");
+var Gif = require("./Gif");
+var async = require("async");
 var fb_root = new Firebase("https://giphifai.firebaseio.com");
 
 function GifList(){
@@ -20,36 +21,42 @@ function GifList(){
 	});
 };
 
-function GifList(tag){
-	var gifs = fb_root.child("tags").child(tag);
+function GifList(tag,do_done){
+	var gif_ref = fb_root.child("tags").child(tag);
 	this.gifs = new Array();
+	var self = this;
 
-	if (gifs.hasChild()){
-		gifs.on("value",function(snap){
-			var data = snap.val();
-			var keys = Object.keys(data);
+	gif_ref.on("value",function(snap){
+		var data = snap.val();
+		var keys = Object.keys(data);
+		var list = [];
 
-			for (id in keys){
-				var current = data[keys[id]];
-
-				this.gifs.push(new Gif(current.url,current.id,current.tags));
+		async.forEachOf(keys,function(current,key,callback){
+			list.push(Gif.getGifById(current,callack));
+			
+			console.log("WORD");
+		},function(err){
+			if (err){
+				console.log(err.message);
 			}
+
+			console.log("Done",list);
+			do_done(list);
 		});
-	}
+	});
+	
 };
 
 GifList.listTags = function(start,limit,callback){
 	var tags = new Array();
-	console.log(start,limit);
-	var tag_ref = fb_root.child("tags").startAt(start).limitToFirst(limit);
-
+	var tag_ref = fb_root.child("tags");
 	tag_ref.on("value",function(snap){
 		var data = snap.val();
-		console.log(data);
-		if (data){
-		var keys = Object.keys(data);
 		
-			callback(keys);
+		if (data){
+			var keys = Object.keys(data);
+			console.log(keys[start] + " " + keys[start+limit]);	
+			callback(keys.slice(start,start+limit));
 		}else{
 			callback(null);
 		}

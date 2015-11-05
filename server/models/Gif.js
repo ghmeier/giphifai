@@ -8,6 +8,16 @@ function Gif() {
 	this.id = "";
 };
 
+Gif.getGifById = function(id,callback){
+	var gif_ref = fb_root.child("gifs").child(id);
+
+	gif_ref.on("value",function(snap){
+		var data = snap.val();
+		console.log(data);
+		return new Gif(data.url,data.id,data.tag);
+	});
+}
+
 function Gif(url,id,tags){
 	this.url = url;
 	this.id = id;
@@ -22,7 +32,7 @@ Gif.prototype.create = function(callback){
 		this.url = this.url.replace("_d.gif","_s.gif");
 		this.id = data.id;
 		callback(new Gif(this.url,this.id,this.tags));
-	}).bind(this);
+	});
 };
 
 Gif.prototype.get = function(id, callback){
@@ -40,12 +50,12 @@ Gif.prototype.get = function(id, callback){
 Gif.prototype.push = function(callback){
 	var gifs = fb_root.child("gifs");
 	var tags = fb_root.child("tags");
-	gifs.push(this);
+	gifs.child(this.id).set(this);
 	for (id in this.tags){
 		var current = this.tags[id];
 		var cur_ref = tags.child(current);
 		
-		cur_ref.push(this.id);
+		cur_ref.child(this.id).set(this.id);
 	}
 	callback(this);
 };
