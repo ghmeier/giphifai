@@ -13,8 +13,9 @@ Gif.getGifById = function(id,callback){
 
 	gif_ref.on("value",function(snap){
 		var data = snap.val();
-		console.log(data);
-		return new Gif(data.url,data.id,data.tag);
+		return new Gif(data.url,data.id,data.tags,function(gif){
+			callback(gif);
+		});
 	});
 }
 
@@ -24,6 +25,14 @@ function Gif(url,id,tags){
 	this.tags = tags;
 }
 
+function Gif(url,id,tags,callback){
+	this.url = url;
+	this.id=id;
+	this.tags=tags;
+	if (callback && typeof(callback) == 'function'){
+		callback(this);
+	}
+}
 
 Gif.prototype.create = function(callback){
 	request.get("http://api.giphy.com/v1/gifs/random?api_key=124hpbJkl6DGOQ",function(err,res,body){
@@ -54,7 +63,7 @@ Gif.prototype.push = function(callback){
 	for (id in this.tags){
 		var current = this.tags[id];
 		var cur_ref = tags.child(current);
-		
+
 		cur_ref.child(this.id).set(this.id);
 	}
 	callback(this);
@@ -65,7 +74,7 @@ Gif.prototype.tag = function(callback){
 	if (!this.url){
 		return "First have a url before tagging";
 	}
-	
+
 	console.log("Analyzing "+this.id);
 	var cur_url = this.url;
 	var self = this;
@@ -78,14 +87,14 @@ Gif.prototype.tag = function(callback){
 			"client_secret":"BddH4Yro_9WsszRNkfyVLPNCGdcKk7Ljiooxbzm5"
 		}
 	},function(err,res,body){
-		
+
 		if (err){
 			return err;
 		}
 
 		var token_data = JSON.parse(body);
 		token = token_data.access_token;
-		
+
 		request.get({
 			url:"http://api.clarifai.com/v1/tag?url="+cur_url,
 			headers: {
@@ -95,11 +104,15 @@ Gif.prototype.tag = function(callback){
 			if (err){
 				return err;
 			}
-	
+
 			var data = JSON.parse(body);
-	
-			self.tags = data.results[0].result.tag.classes[0];
-			
+			if (data.results && data.results[0].result && data.result[0].result.tag && data.result[0].result.tag.classes){
+				self.tags = data.results[0].result.tag.classes[0];
+			}else{
+				console.log(data);
+				return data;
+			}
+
 			callback(new Gif(cur_url,self.id,self.tags));
 		});
 	});
