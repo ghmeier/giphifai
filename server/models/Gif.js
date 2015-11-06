@@ -106,7 +106,7 @@ Gif.prototype.tag = function(callback){
 			}
 
 			var data = JSON.parse(body);
-			if (data.results && data.results[0].result && data.result[0].result.tag && data.result[0].result.tag.classes){
+			if (data.results && data.results[0].result && data.results[0].result.tag && data.results[0].result.tag.classes){
 				self.tags = data.results[0].result.tag.classes[0];
 			}else{
 				console.log(data);
