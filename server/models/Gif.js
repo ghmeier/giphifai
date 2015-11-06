@@ -109,8 +109,8 @@ Gif.prototype.tag = function(callback){
 			if (data.results && data.results[0].result && data.results[0].result.tag && data.results[0].result.tag.classes){
 				self.tags = data.results[0].result.tag.classes[0];
 			}else{
-				console.log(data);
-				return data;
+				//console.log(data);
+				//return data;
 			}
 
 			callback(new Gif(cur_url,self.id,self.tags));
