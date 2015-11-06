@@ -29,38 +29,40 @@
     <header>
         <nav class="top-nav">
             <div class="nav-wrapper">
-              <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <ul class="right hide-on-med-and-down">
                 <li><a href="github.com/ghmeier/giphifai" target="_blank"><img style="height:70%;margin-top:30%;" src="http://dbruno.org/images/GitHub-Mark-64px.png" /></a></li>
               </ul>
-            </div>
-        </nav>
-        <div id="nav-mobile">
-            <ul id="slide-out" class="side-nav fixed">
-                <li class="logo"><a>Giphifai</a></li>
-                <li class="search">
-                    <div class="search-wrapper card">
-                        <input onkeydown="keySearch(this)" id="search" style="margin:10px;width:150px;"><i id="search-button" class="material-icons" onclick="search()" style="color:black;vertical-align:middle">search</i>
-                    </div>
-                </li>
-                <li class="bold no-padding">
-                    <ul class="collapsible collapsible-accordion">
-                        <li>
-                            <a class="collapsible-header">
-                                <i class="mdi-navigation-arrow-drop-down"></i>
-                                <div class="valign-wrapper"><h5 class="valign">Tags</h5></div>
-                            </a>
-                            <div class="collapsible-body">
-                                <ul id="tags">
+                <div id="nav-mobile">
+                    <ul id="slide-out" class="side-nav fixed">
+                        <li class="logo"><a>Giphifai</a></li>
+                        <li class="search">
+                            <div class="search-wrapper card">
+                                <input style="width:155;color:black;margin-left:10px;" onkeydown="keySearch(this)" id="search" type="search">
 
-                                </ul>
-                                <div id="loadmoreajaxloader" style="display:none;"><center><img src="ajax-loader.gif" /></center></div>
+                                <i id="search-button" class="material-icons right" onclick="search()" style="color:black">search</i>
                             </div>
                         </li>
+                        <li class="bold no-padding">
+                            <ul class="collapsible collapsible-accordion">
+                                <li>
+                                    <a class="collapsible-header">
+                                        <i class="mdi-navigation-arrow-drop-down"></i>
+                                        <div class="valign-wrapper"><h5 class="valign">Tags</h5></div>
+                                    </a>
+                                    <div class="collapsible-body">
+                                        <ul id="tags">
+
+                                        </ul>
+                                        <div id="loadmoreajaxloader" style="display:none;"><center><img src="ajax-loader.gif" /></center></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
-                </li>
-            </ul>
-            <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-        </div>
+                    <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+                </div>
+            </div>
+        </nav>
     </header>
     <main>
         <div id="conainer section">
@@ -129,7 +131,7 @@
     function search(){
         var query = $("#search").val();
         $("#gif-list").empty();
-        console.log(query);
+
         if (query && query != ""){
             $.post("search?q="+query,{},function(data,status){
                 var string = "<div class='row'><col s12 m11> <div class='card'><div class='card-content'><span class='card-title' style='color:black'>Related Tags</span><p>";
@@ -137,6 +139,7 @@
                 string += "</p></div></div></div></div>";
                 $("#gif-list").html( $("#gif-list").html() + string);
                 renderGifs(data.list);
+                $('.button-collapse').sideNav('hide');
             });
         }
     }
@@ -153,6 +156,7 @@
             var gifs = data.list;
 
             renderGifs(gifs);
+            $('.button-collapse').sideNav('hide');
         });
     }
 
@@ -167,7 +171,7 @@
                     string+="<div class='row'>";
                 }
 
-                string += "<div class='col s12 m4'><div class='card medium'><div class='card-image'><img src='"+gifs[i].url.replace(/_s/g,"")+"'></div><div class='card-content'>";
+                string += "<div class='col s12 m6 l4'><div class='card medium'><div class='card-image'><img src='"+gifs[i].url.replace(/_s/g,"")+"'></div><div class='card-content'>";
 
                 string += renderTags(gifs[i].tags);
 
