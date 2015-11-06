@@ -43,8 +43,9 @@ module.exports = function(app,passport){
 	});
 
 	app.post("/tags/:tag",function(req,res){
-		//var limit = req.query.limit || 20;
-		var list = new GifList(req.params.tag,function(list){
+        var start = parseInt(req.query.offset) || 0;
+        var limit = parseInt(req.query.limit) || 25;
+		var list = new GifList(req.params.tag,start,limit,function(list){
 			res.json({list:list});
 		});
 	});
@@ -67,8 +68,7 @@ module.exports = function(app,passport){
         var limit = parseInt(req.query.limit) || 25;
 		var list = new GifList(req.params.tag,start,limit,function(list){
             var style = "<style>.gif-list {text-align: justify;font-size: 0;padding: 4% 4% 0 4%}"+
-            ".gif {font-size: 1rem;display: inline-block;background: #eee;border: .125em solid;width: 30%;padding: 2%}"+
-            ".gif:nth-last-child(n+5) {margin-bottom: 4%}"+
+            ".gif {font-size: 1rem;display: inline-block;background: #eee;border: .125em solid;width: 40%;padding: 2%;margin-bottom:4%;}"+
             ".break {display: inline-block;width: 30%;height: 0}"+
             "</style>";
 
@@ -90,5 +90,9 @@ module.exports = function(app,passport){
 
 			res.send(string);
 		});
+	});
+
+	app.get("*",function(req,res){
+		res.render("index.html");
 	});
 };

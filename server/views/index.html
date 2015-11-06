@@ -1,0 +1,152 @@
+<!DOCTYPE>
+<html>
+<head>
+
+    <title>Giphifai</title>
+
+    <!-- Compiled and minified CSS -->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+    .chip:hover{
+        cursor:pointer;
+    }
+    .chip{
+        margin:3px;
+    }
+    @media (min-width: 991px) {
+      main {
+        padding-left: 240px;
+      }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav"></nav>
+        <div id="nav-mobile">
+            <ul id="slide-out" class="side-nav fixed">
+                <li class="logo"><a>Giphifai</a></li>
+                <li class="search">
+                    <div class="search-wrapper card">
+                        <input id="search"><i class="material-icons" style="color:black">search</i>
+                    </div>
+                </li>
+                <li class="bold no-padding">
+                    <ul class="collapsible collapsible-accordion">
+                        <li>
+                            <a class="collapsible-header">Tags<i class="mdi-navigation-arrow-drop-down"></i></a>
+                            <div class="collapsible-body">
+                                <ul id="tags">
+
+                                </ul>
+                                <div id="loadmoreajaxloader" style="display:none;"><center><img src="ajax-loader.gif" /></center></div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        </div>
+    </header>
+    <main>
+        <div id="conainer section">
+            <div id="gif-list">
+
+            </div>
+            <div id="loadmoregif" class="row" style="display:none;">
+               <!--  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                  </div>
+              </div> -->
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
+    <script>
+    var limit = 15;
+    var offset = 0;
+    var g_limit = 15;
+    var g_offset= 0;
+    var g_tag = "";
+
+    $(document).ready(function(){
+        $(".button-collapse").sideNav();
+
+        $.post("tags?limit="+limit+"&offset="+offset,{},function(data,status){
+            for (i=0;i<data.tags.length;i++){
+                $("#tags").append("<li><a onclick=\"getGifs('"+data.tags[i]+"')\">"+data.tags[i]+"</a></li>");
+            }
+        });
+    });
+
+    $("#slide-out").scroll(function(){
+        if($(window).scrollTop() == $(document).height() - $(window).height()){
+            offset += limit;
+            $('div#loadmoreajaxloader').show();
+            $.post("tags?limit="+limit+"&offset="+offset,{},function(data,status){
+                for (i=0;i<data.tags.length;i++){
+                    $("#tags").append("<li><a onclick=\"getGifs('"+data.tags[i]+"')\">"+data.tags[i]+"</a></li>");
+                }
+                $('div#loadmoregif').show();
+            });
+        }
+    });
+
+    $(window).scroll(function(){
+        console.log("words");
+        if($(window).scrollTop() == $(document).height() - $(window).height()){
+            $('div#loadmoregif').show();
+            g_offset += g_limit;
+            addGifs();
+            $('.button-collapse').sideNav('hide');
+        }
+    });
+
+    function getGifs(tag){
+        $("#gif-list").empty();
+        g_offset = 0;
+        g_tag = tag;
+        addGifs();
+    }
+
+    function addGifs(){
+        $.post("tags/"+g_tag+"?limit="+g_limit+"&offset="+g_offset,{},function(data,status){
+            var gifs = data.list;
+            var string = "";
+            for (i=0;i<gifs.length;i++){
+
+                if (i%3 == 0){
+                    if (i!=0){
+                        string+="</div>";
+                    }
+                    string+="<div class='row'>";
+                }
+
+                string += "<div class='col s12 m4'><div class='card medium'><div class='card-image'><img src='"+gifs[i].url.replace(/_s/g,"")+"'></div><div class='card-content'>";
+
+                for (j=0;j<gifs[i].tags.length;j++){
+                    string+="<div class='chip' style='' onclick=\"getGifs('"+gifs[i].tags[j]+"')\">"+gifs[i].tags[j]+"</div>";
+                }
+
+                string += "</div></div></div>";
+
+                if (i == gifs.length -1){
+                    string+="</div>";
+                }
+
+
+            }
+            $('div#loadmoregif').show();
+            $("#gif-list").html( $("#gif-list").html()+string);
+        });
+    }
+    </script>
+</body>
+</html>
