@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
+    #search-button:hover{
+        cursor:pointer;
+    }
     .chip:hover{
         cursor:pointer;
     }
@@ -36,7 +39,7 @@
                 <li class="logo"><a>Giphifai</a></li>
                 <li class="search">
                     <div class="search-wrapper card">
-                        <input id="search" style="margin:10px;width:150px;"><i class="material-icons" style="color:black;vertical-align:middle">search</i>
+                        <input onkeydown="keySearch(this)" id="search" style="margin:10px;width:150px;"><i id="search-button" class="material-icons" onclick="search()" style="color:black;vertical-align:middle">search</i>
                     </div>
                 </li>
                 <li class="bold no-padding">
@@ -109,7 +112,6 @@
     });
 
     $(window).scroll(function(){
-        console.log("words");
         if($(window).scrollTop() == $(document).height() - $(window).height()){
             $('div#loadmoregif').show();
             g_offset += g_limit;
@@ -117,6 +119,27 @@
             $('.button-collapse').sideNav('hide');
         }
     });
+
+    function keySearch(ele) {
+        if(event.keyCode == 13) {
+            search();
+        }
+    }
+
+    function search(){
+        var query = $("#search").val();
+        $("#gif-list").empty();
+        console.log(query);
+        if (query && query != ""){
+            $.post("search?q="+query,{},function(data,status){
+                var string = "<div class='row'><col s12 m11> <div class='card'><div class='card-content'><span class='card-title' style='color:black'>Related Tags</span><p>";
+                string += renderTags(data.tags);
+                string += "</p></div></div></div></div>";
+                $("#gif-list").html( $("#gif-list").html() + string);
+                renderGifs(data.list);
+            });
+        }
+    }
 
     function getGifs(tag){
         $("#gif-list").empty();
@@ -128,7 +151,13 @@
     function addGifs(){
         $.post("tags/"+g_tag+"?limit="+g_limit+"&offset="+g_offset,{},function(data,status){
             var gifs = data.list;
-            var string = "";
+
+            renderGifs(gifs);
+        });
+    }
+
+    function renderGifs(gifs){
+        var string = "";
             for (i=0;i<gifs.length;i++){
 
                 if (i%3 == 0){
@@ -140,9 +169,7 @@
 
                 string += "<div class='col s12 m4'><div class='card medium'><div class='card-image'><img src='"+gifs[i].url.replace(/_s/g,"")+"'></div><div class='card-content'>";
 
-                for (j=0;j<gifs[i].tags.length;j++){
-                    string+="<div class='chip' style='' onclick=\"getGifs('"+gifs[i].tags[j]+"')\">"+gifs[i].tags[j]+"</div>";
-                }
+                string += renderTags(gifs[i].tags);
 
                 string += "</div></div></div>";
 
@@ -154,7 +181,14 @@
             }
             $('div#loadmoregif').show();
             $("#gif-list").html( $("#gif-list").html()+string);
-        });
+    }
+
+    function renderTags(tags){
+        var string = "";
+        for (j=0;j<tags.length;j++){
+             string+="<div class='chip' style='' onclick=\"getGifs('"+tags[j]+"')\">"+tags[j]+"</div>";
+        }
+        return string
     }
     </script>
 </body>

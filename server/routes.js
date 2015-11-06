@@ -50,6 +50,16 @@ module.exports = function(app,passport){
 		});
 	});
 
+	app.post("/search",function(req,res){
+		var query = req.query.q;
+		var start = parseInt(req.query.offset) || 0;
+		var limit = parseInt(req.query.limit) || 25;
+
+		GifList.searchByTag(query,start,limit,function(data){
+			res.json({tags:data.tags,list:data.list});
+		})
+	})
+
 	app.get("*",function(req,res){
 		res.render("index.html");
 	});
