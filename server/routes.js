@@ -33,6 +33,23 @@ module.exports = function(app,passport){
 
 	});
 
+	app.post("/analyze/url",function(req,res){
+		var url = req.query.u;
+
+		if (!url || url == ""){
+			res.json({success:false,message:"Must provide url to analyze"});
+			return;
+		}
+		
+		var current = new Gif(url,null,new Array());
+		current.tag(function(tagged){
+			tagged.push(function(up){
+				res.json({success:true,gif:up.url,tags:up.tags});
+			});
+		});
+
+	});
+
 	app.post("/tags",function(req,res){
 		var start = parseInt(req.query.offset) || 0;
 		var limit = parseInt(req.query.limit) || 25;
@@ -47,6 +64,24 @@ module.exports = function(app,passport){
         var limit = parseInt(req.query.limit) || 25;
 		var list = new GifList(req.params.tag,start,limit,function(list){
 			res.json({list:list});
+		});
+	});
+
+	app.post("/tags/:tag/ignore",function(req,res){
+		var id = req.query.id;
+
+		if (!id || id == ""){
+			res.json({success:false,message:"Must provide a gif id"});
+			return;
+		}
+
+		var current = Gif.getGifById(id,function(gif){
+			if (!gif || !gif.url || gif.url == ""){
+				res.json({success:false,message:"Invalid gif id "+id});
+				return;
+			}
+
+
 		});
 	});
 

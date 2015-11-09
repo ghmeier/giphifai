@@ -19,16 +19,10 @@ Gif.getGifById = function(id,callback){
 	});
 }
 
-function Gif(url,id,tags){
-	this.url = url;
-	this.id = id;
-	this.tags = tags;
-}
-
 function Gif(url,id,tags,callback){
-	this.url = url;
-	this.id=id;
-	this.tags=tags;
+	this.url = url || "";
+	this.id= id || fb_root.child("gifs").push().key();
+	this.tags=tags || "";
 	if (callback && typeof(callback) == 'function'){
 		callback(this);
 	}
@@ -59,6 +53,7 @@ Gif.prototype.get = function(id, callback){
 Gif.prototype.push = function(callback){
 	var gifs = fb_root.child("gifs");
 	var tags = fb_root.child("tags");
+
 	gifs.child(this.id).set(this);
 	for (id in this.tags){
 		var current = this.tags[id];
