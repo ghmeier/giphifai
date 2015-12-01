@@ -40,7 +40,7 @@ module.exports = function(app,passport){
 			res.json({success:false,message:"Must provide url to analyze"});
 			return;
 		}
-		
+
 		var current = new Gif(url,null,new Array());
 		current.tag(function(tagged){
 			tagged.push(function(up){
@@ -69,6 +69,7 @@ module.exports = function(app,passport){
 
 	app.post("/tags/:tag/ignore",function(req,res){
 		var id = req.query.id;
+		var tag = req.params.tag;
 
 		if (!id || id == ""){
 			res.json({success:false,message:"Must provide a gif id"});
@@ -81,7 +82,14 @@ module.exports = function(app,passport){
 				return;
 			}
 
+			gif.ignore(tag,function(removed){
+				if (removed){
+					res.json({success:true,message:"removed tag"});
+					return;
+				}
 
+				res.json({success:false,message:"error removing tag"});
+			})
 		});
 	});
 

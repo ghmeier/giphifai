@@ -11,7 +11,7 @@ function Gif() {
 Gif.getGifById = function(id,callback){
 	var gif_ref = fb_root.child("gifs").child(id);
 
-	gif_ref.on("value",function(snap){
+	gif_ref.once("value",function(snap){
 		var data = snap.val();
 		return new Gif(data.url,data.id,data.tags,function(gif){
 			callback(gif);
@@ -40,7 +40,7 @@ Gif.prototype.create = function(callback){
 
 Gif.prototype.get = function(id, callback){
 	var gifs = fb_root.child("gifs");
-	gifs.on("value",function(s){
+	gifs.once("value",function(s){
 		var data = s.value();
 
 		this.url = data.url;
@@ -63,6 +63,64 @@ Gif.prototype.push = function(callback){
 	}
 	callback(this);
 };
+
+Gif.prototype.ignore = function(tag,callback){
+
+	if (this.tags.indexOf(tag) == -1){
+		callback(false);
+		return;
+	}
+
+	var gif = fb_root.child("gifs").child(this.id);
+	var tags = fb_root.child("tags").child(tag);
+	var self = this;
+
+	request.post({
+		url:"https://api.clarifai.com/v1/token",
+		form:{
+			"grant_type":"client_credentials",
+			"client_id": "LtBAeH3T5UdE9uTYaiehZObqh1PZehqGOEwr064G",
+			"client_secret":"BddH4Yro_9WsszRNkfyVLPNCGdcKk7Ljiooxbzm5"
+		}
+	},function(err,res,body){
+
+		if (err){
+			callback(false);
+			return;
+		}
+
+		var token_data = JSON.parse(body);
+		token = token_data.access_token;
+
+		request.get({
+			url:"http://api.clarifai.com/v1/feedback?url="+self.url+"&remove_tags="+tag,
+			headers: {
+				'Authorization':'Bearer '+token
+			}
+		},function(err,res,body){
+			gif.once("value",function(snapshot){
+				var data = snapshot.val();
+
+				for (i=0;i<data.tags.length;i++){
+
+					if (data.tags[i] == tag){
+						data.tags.splice(i,1);
+						gif.child(tag).set(data.tags);
+						break;
+					}
+				}
+
+				tags.once("value",function(snap){
+					var list = snap.val();
+
+					list[self.id] = null;
+					callback(true);
+				});
+			});
+		});
+	});
+
+}
 
 Gif.prototype.tag = function(callback){
 

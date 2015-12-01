@@ -173,7 +173,7 @@
 
                 string += "<div class='col s12 m6 l4'><div class='card medium'><div class='card-image'><img src='"+gifs[i].url.replace(/_s/g,"")+"'></div><div class='card-content'>";
 
-                string += renderTags(gifs[i].tags);
+                string += renderTags(gifs[i].id,gifs[i].tags);
 
                 string += "</div></div></div>";
 
@@ -187,10 +187,18 @@
             $("#gif-list").html( $("#gif-list").html()+string);
     }
 
-    function renderTags(tags){
+    function removeTag(id,tag){
+        console.log(id,tag);
+        $.post("tags/"+tag+"/ignore?id="+id,{},function(data,status){
+            console.log(data);
+        });
+
+    }
+
+    function renderTags(id,tags){
         var string = "";
         for (j=0;j<tags.length;j++){
-             string+="<div class='chip' style='' onclick=\"getGifs('"+tags[j]+"')\">"+tags[j]+"</div>";
+             string+="<div class='chip' style='' ><span onclick=\"getGifs('"+tags[j]+"')\">"+tags[j]+"</span><i onclick=\"removeTag('"+id+"','"+tags[j]+"')\" class='material-icons'>close</i></div>";
         }
         return string
     }

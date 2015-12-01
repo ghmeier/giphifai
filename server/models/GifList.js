@@ -7,7 +7,7 @@ function GifList(){
 	var gifs = fb_root.child("gifs");
 	this.gifs = new Array();
 
-	gifs.on("value",function(snap){
+	gifs.once("value",function(snap){
 		var data = snap.val();
 		var keys = Object.keys(data);
 
@@ -26,7 +26,7 @@ function GifList(tag,start,limit,do_done){
 	this.gifs = new Array();
 	var self = this;
 	var callback = do_done;
-	gif_ref.on("value",function(snap){
+	gif_ref.once("value",function(snap){
 		var data = snap.val();
 		var keys = Object.keys(data);
 		var list = [];
@@ -51,7 +51,7 @@ function GifList(tag,start,limit,do_done){
 GifList.listTags = function(start,limit,callback){
 	var tags = new Array();
 	var tag_ref = fb_root.child("tags");
-	tag_ref.on("value",function(snap){
+	tag_ref.once("value",function(snap){
 		var data = snap.val();
 
 		if (data){
